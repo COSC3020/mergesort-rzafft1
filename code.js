@@ -76,10 +76,14 @@ Mergesort
 
 */
 
+let arr = [3, 5, 1, 2, 9, 6, 12, 10, 5, 4, 7];
+mergesort(arr, 0, arr.length-1);
+console.log(arr);
+
 // for testing purposes im using this recursive sort function from a Lab in cosc 2030, 
 function mergeSort(arr,left,right,size)
 {
-  if(left<right)
+  if(right>left)
   {
     //find the mid point
     int mid = left+(right-left)/2;
