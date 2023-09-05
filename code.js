@@ -76,6 +76,20 @@ Mergesort
 
 */
 
+// for testing purposes im using this recursive sort function from a Lab in cosc 2030, 
+function mergeSort(arr,left,right,size)
+{
+  if(left<right)
+  {
+    //find the mid point
+    int mid = left+(right-left)/2;
+
+    mergeSort(toMerge,left,mid,size);
+    mergeSort(toMerge,mid+1,right,size);
+    merge(toMerge,left,mid,right);
+  }
+}
+
 function merge (arr, indexLeft, indexRight, midpoint)
 {
     // store length of left subarray
@@ -110,7 +124,7 @@ function merge (arr, indexLeft, indexRight, midpoint)
             arr[index] = L[countL];
             countL++;
         }
-        // otherwise, the value at R is greater than the value at L 
+        // otherwise, the value at R is less than the value at L 
         // and the right subarray still has values to evaluate so we add the right value to the sorted array
         else
         {
