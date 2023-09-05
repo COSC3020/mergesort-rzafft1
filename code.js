@@ -81,17 +81,15 @@ mergesort(arr, 0, arr.length-1);
 console.log(arr);
 
 // for testing purposes im using this recursive sort function from a Lab in cosc 2030, 
-function mergeSort(arr,left,right,size)
+function mergesort (arr, indexL, indexR)
 {
-  if(right>left)
-  {
-    //find the mid point
-    int mid = left+(right-left)/2;
-
-    mergeSort(toMerge,left,mid,size);
-    mergeSort(toMerge,mid+1,right,size);
-    merge(toMerge,left,mid,right);
-  }
+    if (indexR > indexL)
+    {
+        let midpoint = indexL + Math.floor((indexR - indexL) / 2);
+        mergesort(arr, indexL, midpoint);    // sort left
+        mergesort(arr, midpoint+1, indexR);  // sort right
+        merge(arr, indexL, indexR, midpoint); // merge left and right
+    }
 }
 
 function merge (arr, indexLeft, indexRight, midpoint)
