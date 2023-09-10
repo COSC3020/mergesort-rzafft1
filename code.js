@@ -65,7 +65,7 @@ Mergesort
         lets ask for the array itself, a right index, a left index, and a midpoint, so that we 
         can split the array into a left and right array AFTER we call the merge function. 
 
-    - part 2 : now for the second part, how can we sort each half of the array 
+    - part 2 : now for the second part, how can we sort the array 
       without using recursion and instead using a combination of loops and 
       our merge function 
 
@@ -74,22 +74,105 @@ Mergesort
             - we could create multiple arrays of length 1, which can be considered sorted
       - we could then use our merge function to merge the sorted arrays into a single sorted array
 
+      - essentially we will need to take a pair of the list, a left and right subarray, 
+      starting with index 0 (left) and index 1 (right) 
+      (a left and right element, each size of one, therefore each list is sorted), 
+      and call the merge function on the pair (it will be ideal to not return an array from merge), 
+      then we will need to incrmement our left and right index to jump to evaluate the next pair, 
+      2, 3 and call the merge function on 
+
+      x = [6, 3, 8, 2, 5, 3]
+
+      * we will need to start with L and R at index 0 and 1 
+
+      left  = [3] --> L = 0                     * sorted list of length 1 at index 0 (left)
+      right = [2] --> R = 1                     * sorted list of length 1 at index 1 (right)
+      
+      merge(L, R) --> x = [3, 6, 2, 8, 5, 3]    * sorted list of length 2, at index 0-1,          
+
+      left  = [8] --> L = 2                     * sorted list of length 1 at index 2 (left)
+      right = [2] --> R = 3                     * sorted list of length 1 at index 3 (right)
+
+      merge(L, R) --> x = [3, 6, 2, 8, 5, 3]    * sorted list of length 2, at index 0-1,            
+
+      ... go through the whole array and sort pairs in multiples of 2
+
+      ... now we have a list of sorted pairs (next we want a list of sorted quads)
+
+      * now will need to start with L and R at index 0 and 2 
+
+      x = [3, 6, 2, 8, 3, 5]
+
+      left  = [3, 6] --> L = 0                  * sorted list of length 2 at index 0 (right)
+      right = [2, 8] --> R = 2                  * sorted list of length 2 at index 2 (right)
+
+      merge(L, R) --> x = [2, 3, 6, 8, 3, 5]    * sorted lists of length 2, at index 0-3,         
+
+      left  = [2, 3, 6, 8]     --> L = 4       
+      right = [3, 5, NaN, NaN] --> R = 8        * account for array bounds
+
+      ... go through whole array and sort quads in multiples of 4
+
+      ... now we have a list of sorted quads (next we would want a list of sorted 8ths) 
+
+      * we would want to start with L and R at index 0 and 4 
+    
+      ... go through whole array and sort 8ths in multiples of 8
+
+      ... now we have a list of sorted 8ths (next we want a list of sorted 16ths)
+      
+      * we would want to start with L and R at index 0 and 8
+
+      WHEN DO WE KNOW THE LIST IS SORTED? when index L is equal to the midpoint, we know we only need to merge one more time and then the list will be sorted 
+
 */
 
-let arr = [3, 5, 1, 2, 9, 6, 12, 10, 5, 4, 7];
-mergesort(arr, 0, arr.length-1);
-console.log(arr);
+let arrIterative = [6, 3, 8, 2, 5, 3, 1, 0];
+mergesort(arrIterative);
+console.log("Iterative Approach : " + arrIterative);
 
-// for testing purposes im using this recursive sort function from a Lab in cosc 2030, 
-function mergesort (arr, indexL, indexR)
+
+// im having trouble calculating the right index, i think this should be the only major error here. 
+function sort (x, tmp)
 {
-    if (indexR > indexL)
-    {
-        let midpoint = indexL + Math.floor((indexR - indexL) / 2);
-        mergesort(arr, indexL, midpoint);    // sort left
-        mergesort(arr, midpoint+1, indexR);  // sort right
-        merge(arr, indexL, indexR, midpoint); // merge left and right
+    var left, right, mid, size;
+
+    size = x.length;
+
+    // start with i equal to 1, we need to get sorted lists of length 1 first
+    // we increment i by a multiple of 2, so we get sorted lists of length, 1, 2, 4, 8, 16 and so on
+    // we will create sorted lists until i is equal to the size of the array, meaning the list is divided into two sorted halfs
+    for (i = 1; i < size; i *= 2) // stop when the midpoint, which could is a multiple of i, is less than the size
+    {   
+        // here we need to actually go through the list create a list of sorted lists of length i
+        // we stop once i is greater than the final position that right will need to be at, (size of array - length needed for right array)
+        // we increment left by the size we want the sorted list to be times 2, since we want a pairs of sorted lists
+        for (left = 0; left < size - i; left += i * 2) 
+        {
+            if (i == 1)
+            {
+                right = left + i
+            }
+            else if (left == 0)
+            {
+                right = i;
+            }
+            else
+            {
+                right = left * 2
+            }
+            mid = Math.floor((left+right)/2);
+            merge(x, left, right, mid);
+            console.log("left ("+left+"), right("+right+"), mid("+mid+"), x("+x+")")
+        }
+        console.log("-------------------")
     }
+
+}
+
+function mergesort(x) 
+{
+    sort(x);
 }
 
 function merge (arr, indexLeft, indexRight, midpoint)
@@ -126,7 +209,7 @@ function merge (arr, indexLeft, indexRight, midpoint)
             arr[index] = L[countL];
             countL++;
         }
-        // otherwise, the value at R is less than the value at L 
+        // otherwise, the value at R is greater than the value at L 
         // and the right subarray still has values to evaluate so we add the right value to the sorted array
         else
         {
