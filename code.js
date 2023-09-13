@@ -1,80 +1,73 @@
-/* PLANNING 
 
-Mergesort 
+// passed all tests
+let arr = [5, 3, 8, 2, 6, 1, 0, 9];
+//let arr = [1,1, 0];
+//let arr = [1, 0, 0, 0];
+//let arr = [0, 0, 0, 0, 0];
+let x = mergesort(arr);
+console.log("Unsorted: " + arr);
+console.log("Sorted  : " + x);
 
-- basically we are going to use a divide and conquer method divide the array into
-  sorted arrays, and then merge them into a single sorted array
 
-    - part 1 : how could we merge two sorted halves of an array?
+function sort (x)
+{
+    var left, right, mid, size;
 
-        -> well if both havles are sorted and we need to return an array...
-            
-                   L       R
-        (i = 0)    4  and  2  
-        (i = 1)    5       3
-        (i = 2)    7       6
+    size = x.length;
 
-        say we are returning a single merged array, M,
-        we could compare each element in L and R at i, 
-            and if L[i] < R[i] then we push L[i] to M, 
-            otherwise we push R[i] to M
+    // start with i equal to 1, we need to get sorted lists of length 1 first
+    // we increment i by a multiple of 2, so we get sorted lists of length, 1, 2, 4, 8, 16 and so on
+    // we will create sorted lists while i is less than the size of the array
+    for (let i = 1; i < size; i *= 2) // stop when the midpoint, which could is a multiple of i, is less than the size
+    {   
+        // here we need to actually go through the list and create a list of sorted lists of length i, at a position left and right
+        // we stop once i is greater than the final position that the right positionwill need to be at, (size of array - length needed for right array)
+        // we increment left by the size of each sorted list, and since we are builing at least two sorted lists per iteration, we increment left by i times 2
+        for (left = 0; left < size - i; left += i * 2) 
+        {
+            right = left + i * 2 - 1;  
+            mid = left + i - 1; 
 
-        the problem with the approach above is that we 
-        will end up with an array half the size of the original
-        in the case above, we will get the array 2 3 6 ... not good
-        
-        this indicates that we will need two iterations, a left 
-        and a right, and if we insert an element from a left array
-        we can increment a left variable and the same for the right 
-        ... however ... this cannot be done with a for loop, after 
-        all we have two iterations, we need a while loop, or recursion. 
-        lets do a while loop. 
+            // since we are creating lists of length i, it is possible that the right position holds a list 
+            // that contains elements that are not within our array bounds, these will be undefined elements
+            // in this case which happens when the right index, is greater or equal to the size of the array, 
+            // we need to shift the right index (# of undefined elements in right) positions to the left
 
-        lets use a while(true) loop and set a left increment equal to 0 and a right
-        increment equal to 0 and compare L to R and insert the smaller 
-        element into our new array and increment its corresponding counter. 
+            var overflow = right - size // if over flow is less than zero the right index is in bounds, 
+                                        // if it is zero or greater, we are trying to merge a right list that has out of bounds elements
+            if (overflow >= 0)
+            {
+                right = shiftPos(right, overflow) // shift right to the left by the number of out of bounds elements it contains 
+            }
 
-        we need to be careful when comparing the L and R subarrays using individual
-        counters for both L and R. For example, if the right counter is greater 
-        than the length of the right subarray, we dont want to compare it to the left
-        subarray. So in this case, instead of checking if L[leftIncrement] < R[rightIncrement] we just need to 
-        add L[leftIncrement] to our sorted array, since, rightIncrement > rightLength therefore, 
-        R[rightIncrement] would be out of bounds. So instead of just checking if  L[leftIncrement] < R[rightIncrement]
-        or if R[rightIncrement] < L[leftIncrement] we also need to make sure the left and right 
-        incrments are in bounds (in this case, this means they are less then the lengths of their
-        corresponding subarrays)
+            merge(x, left, right, mid); // merge sorted list at left and sorted list at right 
+        }
+    }
+    return x;
+}
 
-        we know that if either the left or right array's corresponding counters
-        are greater than thier correspoinding subarray lengths, 
-        we want to stop comparing elements, since we will be out of bounds.
-        this means we may still have some elements left that we have not yet 
-        evaluated in the left or right subarrays. This means we need to allow these
-        left over values to be added into the sorted array. we could check 
-        for this case with a simple if statement and then use two seperate while
-        loops to add remaining elements from the left or right subarrays into the 
-        sorted array while their counter is less than its corresponding array length
-        so lets check to see if either
-        arrays are empty, and if they arnt (since we know one of them should already
-        be empty), lets fill the new array with the 
-        remaining elements of the non empty array. now we can break the loop. 
+function mergesort(x) 
+{
+    return sort(x);
+}
 
-        there is still a complication here. currently we are talking about create a function with
-        parameters that ask for a left array and a right array... this is not very practicle... 
-        because in our sort function we will have to create a left and right array rather than 
-        just rearranging the indices. So instead of having parameters (arrLeft[], arrRight[]), 
-        lets ask for the array itself, a right index, a left index, and a midpoint, so that we 
-        can split the array into a left and right array AFTER we call the merge function. 
+function shiftPos (start, shift) // check if start of array is in bounds, if it is do nothing, if it isnt, tweak the right position
+{ 
+    if (shift == 0) // we are only reaching one element over bounds 
+    {
+        return start - 1 // shift right index 1 postion to the left
+    }
+    else if (shift == 1) // we are reaching two elements over bounds 
+    {
+        return start - 2 // shift right index 2 postions to the left
+    }
+    else // we are reaching three elements over bounds, with our implementation, it is not possible to go more than three elements over bounds
+    {
+        return start - 3 // shift right index 3 postions to the left
+    }
+}
 
-    - part 2 : now for the second part, how can we sort each half of the array 
-      without using recursion and instead using a combination of loops and 
-      our merge function 
-
-      - bubble sort type approach?
-      - we need to divide the array into sorted arrays
-            - we could create multiple arrays of length 1, which can be considered sorted
-      - we could then use our merge function to merge the sorted arrays into a single sorted array
-
-*/
+  
 
 function merge (arr, indexLeft, indexRight, midpoint)
 {
@@ -144,3 +137,5 @@ function merge (arr, indexLeft, indexRight, midpoint)
     }
 
 }
+
+
