@@ -41,3 +41,6 @@ markdown file.
   would be different than the best-case complexity for an input which for example, could be a single element. Although the runtime in 
   this case would be O(1) this is irrelevant since we care about what happens when n is growing. As the size of the input array grows,
   the runtime will be the same for any case, which is n + log(n) * n, therefore, $\Theta$ = n + log(n) * n. 
+
+**How could I make this algorithm sort in place?**
+- in my merge function, we use a left and right array to store the elements that need to be merged, and then we take out elements from each subarray and insert them back into the original array in their designated location. This could be done without building any subarrays, however, we would have to keep track of the start and ending indices of the left and right subarrays so that we are staying in bounds and only sorting the elements that we want to be sorted. So instead of creating a left and right subarray in merge, we just need to create a left and right variable that each hold the starting point of where the subarray started in the original array and a ending point that describes where the subarray would have ended in the original array. As long as we can keep track of the original positions of the subarrays, we can sort in place. 
